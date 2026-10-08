@@ -1,0 +1,19 @@
+{
+  "name": "CERT Field Guide (Draft)",
+  "short_name": "CERT Guide",
+  "description": "Offline condensed field reference based on the FEMA CERT Basic Training Participant Manual (2019). Not a FEMA product.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b2545",
+  "theme_color": "#0b2545",
+  "lang": "en-US",
+  "categories": ["reference", "medical", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

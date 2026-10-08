@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>CERT Field Guide</title>
+<meta name="description" content="Offline condensed CERT field reference (draft). Not a FEMA product.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CERT Guide">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0b2545">
+<link rel="stylesheet" href="css/app.css">
+<script src="js/app.js" defer></script>
+</head>
+<body>
+<header class="topbar" id="topbar">
+  <button class="iconbtn" id="backBtn" aria-label="Back" hidden>&#8249;</button>
+  <a class="brand" href="#/" id="brand"><img src="icons/favicon-32.png" alt="" width="24" height="24"><span>CERT Field Guide</span></a>
+  <h1 class="toptitle" id="topTitle"></h1>
+  <a class="draftchip" href="#/about" id="draftChip" hidden>DRAFT</a>
+  <button class="iconbtn" id="themeBtn" aria-label="Change theme" title="Theme">&#9680;</button>
+</header>
+<div class="updatebar" id="updateBar" hidden><span>An updated version is ready.</span><button id="updateBtn">Update</button></div>
+<main id="view" tabindex="-1"><p class="loading">Loading&hellip;</p></main>
+<nav class="tabbar" id="tabbar" aria-label="Main">
+  <a href="#/" data-tab="home"><span class="ti">&#8962;</span><span>Home</span></a>
+  <a href="#/search" data-tab="search"><span class="ti">&#9906;</span><span>Search</span></a>
+  <a href="#/tool/tally" data-tab="tally"><span class="ti">&#35;</span><span>Tally</span></a>
+  <a href="#/local" data-tab="local"><span class="ti">&#9873;</span><span>Local</span></a>
+  <a href="#/about" data-tab="about"><span class="ti">&#9432;</span><span>About</span></a>
+</nav>
+<div class="modal" id="draftModal" role="dialog" aria-modal="true" aria-labelledby="draftTitle" hidden>
+  <div class="modalcard">
+    <h2 id="draftTitle">DRAFT: not for field use yet</h2>
+    <p>This is a condensed reference made from the FEMA CERT Basic Training Participant Manual (2019). It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong>.</p>
+    <p>The medical and procedural content is <strong>pending review by a CERT instructor</strong>. Until it is reviewed, use it for study only. In an incident, follow your training, your team leader, and local protocols.</p>
+    <button class="btn primary big" id="draftOk">I understand</button>
+  </div>
+</div>
+</body>
+</html>

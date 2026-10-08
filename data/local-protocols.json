@@ -1,0 +1,171 @@
+{
+ "title": "Local Protocols - Milton Township CERT",
+ "status": "PLACEHOLDERS. To be completed and approved by the Milton Township CERT program.",
+ "howToEdit": "Edit app/data/local-protocols.json: replace each null \"value\" with approved text and set \"placeholder\": false. Rebuild to refresh the offline cache.",
+ "items": [
+  {
+   "id": "activation",
+   "title": "Activation and call-out",
+   "why": "How and when members self-activate or are called out is set by the sponsoring agency.",
+   "cite": [
+    "2-8",
+    "Intro-3",
+    "1-23"
+   ],
+   "topic": "organization.mobilization",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "staging",
+   "title": "Staging area and Command Post locations",
+   "why": "Where to report after personal and family safety are secured.",
+   "cite": [
+    "2-8",
+    "Intro-3",
+    "1-23"
+   ],
+   "topic": "organization.mobilization",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "leadership",
+   "title": "Chain of command and who you report to",
+   "why": "Team leadership is set by the sponsoring agency SOPs.",
+   "cite": [
+    "2-8",
+    "Intro-3",
+    "1-23"
+   ],
+   "topic": "organization.mobilization",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "comms",
+   "title": "Communications (radio channels, check-in, runners)",
+   "why": "Not specified in the manual; program-specific.",
+   "cite": [],
+   "topic": null,
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "numbers",
+   "title": "Emergency and non-emergency phone numbers",
+   "why": "Program to supply verified local numbers.",
+   "cite": [],
+   "topic": null,
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "triage",
+   "title": "Patient assessment and triage method",
+   "why": "The FEMA 2019 manual names triage only as a function (4-4). The program's triage unit teaches START (\"30-2-Can Do\").",
+   "cite": [
+    "4-4",
+    "T-5",
+    "T-17"
+   ],
+   "topic": "triage.start-flow",
+   "placeholder": false,
+   "value": "START, per the program's \"CERT Triage & Mass Casualty Incidents\" unit. See the Triage section and the START triage quick tool. (Pending instructor review.)"
+  },
+  {
+   "id": "tags",
+   "title": "Triage tag / marking method preferred locally",
+   "why": "The triage unit says to consult local protocols on which label or mark local professional responders prefer.",
+   "cite": [
+    "T-16"
+   ],
+   "topic": "triage.categories",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "medops",
+   "title": "Other disaster medical operations protocols",
+   "why": "The manual says medical operations vary by locality.",
+   "cite": [
+    "3-1"
+   ],
+   "topic": "medops.functions",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "black-handling",
+   "title": "Handling and moving people in the Black category (including any separate holding area)",
+   "why": "The FEMA manual and the triage unit both give guidance on this and defer to local laws and the sponsoring agency. Illinois rule: a non-medical professional may make this determination only in cases of decapitation. The app leaves it to your program protocol.",
+   "cite": [
+    "5-12",
+    "T-6",
+    "T-7",
+    "T-18"
+   ],
+   "topic": null,
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "utilities",
+   "title": "Fire department guidelines for utilities; gas utility contact",
+   "why": "Always follow your local fire department guidelines; contact the gas company if unsure.",
+   "cite": [
+    "6-16",
+    "6-17"
+   ],
+   "topic": "utilities.gas",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "water",
+   "title": "Water shutoff procedure",
+   "why": "The manual mentions water shutoff but gives no procedure.",
+   "cite": [
+    "1-12",
+    "1-21"
+   ],
+   "topic": "utilities.water-shutoff-gap",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "media",
+   "title": "Media contact (Public Information Officer)",
+   "why": "The sponsoring agency's PIO decides who speaks to media.",
+   "cite": [
+    "2-6"
+   ],
+   "topic": "organization.media",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "exterior",
+   "title": "Exterior search procedures",
+   "why": "Set by those in charge of the search.",
+   "cite": [
+    "7-16",
+    "7-17"
+   ],
+   "topic": "sar.exterior-search",
+   "placeholder": true,
+   "value": null
+  },
+  {
+   "id": "laws",
+   "title": "Local laws (Table 1.6, Illinois / Milton Township)",
+   "why": "Table 1.6 \"Local Laws in Your Area\" is blank in the manual for the program to complete.",
+   "cite": [
+    "1-26"
+   ],
+   "topic": "prep.liability",
+   "placeholder": true,
+   "value": null
+  }
+ ]
+}
