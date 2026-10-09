@@ -364,8 +364,9 @@
     document.body.classList.add('walking');
     const pct = Math.round(((i + 1) / cards.length) * 100);
     let h = `<div class="walk"><div class="wtop"><span class="prog">${i + 1} / ${cards.length}</span><a class="btn" href="${back}">Exit</a></div><div class="bar"><i class="w${pct}"></i></div>`;
+    h += '<div class="wstep">';
     if (ids.length > 1) h += `<div class="wtopic">${esc(c.title)}</div>`;
-    h += `<div class="wkind">${esc(c.kind)}</div><p class="wtext">${esc(c.text)}</p><p class="cite">${esc(citeTxt(c.cite))}</p>`;
+    h += `<div class="wkind">${esc(c.kind)}</div><p class="wtext">${esc(c.text)}</p><p class="cite">${esc(citeTxt(c.cite))}</p></div>`;
     if (c.first && c.review && c.review.length) h += c.review.map((r) => `<div class="box review"><span class="lbl">\u2691 Instructor review</span>${esc(r.text)}</div>`).join('');
     if (c.warn.length) h += `<details class="pinned"${c.first ? ' open' : ''}><summary>\u26D4 ${c.warn.length} warning${c.warn.length > 1 ? 's' : ''} for ${esc(c.title)}</summary>${warningsHTML(c.warn)}</details>`;
     h += '</div>';
@@ -666,7 +667,7 @@
     setHeader('Welcome', null); setTab('');
     document.body.classList.add('welcoming');
     v.innerHTML = `<div class="wcard" id="welcome">
-      <img class="wlogo" src="icons/icon-192.png" alt="" width="64" height="64">
+      <div class="wlockup"><img class="lk-light" src="icons/lockup-light.svg" alt="CERT Field Guide" width="273" height="100"><img class="lk-dark" src="icons/lockup-dark.svg" alt="CERT Field Guide" width="273" height="100"></div>
       <h2 class="wtitle" id="wTitle">Milton Township CERT Field Guide</h2>
       <p class="wsafety" id="wSafety">${esc(w.safety)}</p>
       <button type="button" class="btn primary big wcontinue" id="wContinue">Continue</button>

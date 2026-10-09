@@ -7,8 +7,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0b2545",
-  "theme_color": "#0b2545",
+  "background_color": "#04040b",
+  "theme_color": "#04040b",
   "lang": "en-US",
   "categories": ["reference", "medical", "utilities"],
   "icons": [
