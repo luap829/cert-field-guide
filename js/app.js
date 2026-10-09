@@ -669,11 +669,11 @@
     v.innerHTML = `<div class="wcard" id="welcome">
       <div class="wlockup"><img class="lk-light" src="icons/lockup-light.svg" alt="CERT Field Guide" width="273" height="100"><img class="lk-dark" src="icons/lockup-dark.svg" alt="CERT Field Guide" width="273" height="100"></div>
       <h2 class="wtitle" id="wTitle">Milton Township CERT Field Guide</h2>
-      <p class="wsafety" id="wSafety">${esc(w.safety)}</p>
-      <button type="button" class="btn primary big wcontinue" id="wContinue">Continue</button>
-      <h3 id="wMissionH">${esc(w.missionHeading)}</h3><p id="wMission">${esc(w.mission)}</p>
       <h3 id="wMottoH">${esc(w.mottoHeading)}</h3><p class="wmotto" id="wMotto">${esc(w.motto)}</p>
+      <p class="wsafety" id="wSafety">${esc(w.safety)}</p>
+      <div class="wgo"><button type="button" class="btn primary wcontinue" id="wContinue">Continue to main menu <span aria-hidden="true">\u2192</span></button></div>
       ${S.c.app.reviewed ? '' : '<div class="notice draft" id="wDraft"><strong>DRAFT: not for field use yet.</strong> This is a condensed reference made from the FEMA CERT Basic Training Participant Manual (2019) and the program\u2019s triage unit. It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong>. The medical and procedural content is <strong>pending review by a CERT instructor</strong>. Until it is reviewed, use it for study only. In an incident, follow your training, your team leader, and local protocols.</div>'}
+      <h3 id="wMissionH">${esc(w.missionHeading)}</h3><p id="wMission">${esc(w.mission)}</p>
     </div>`;
     const next = welcomeNext; welcomeNext = '#/';
     $('#wContinue').onclick = () => location.replace(next);
