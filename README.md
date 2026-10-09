@@ -9,8 +9,9 @@ Live app: https://luap829.github.io/cert-field-guide/
 ## Sources and credit
 - **FEMA**, *CERT Basic Training Participant Manual* (2019 update): https://www.ready.gov/sites/default/files/2019.CERT_.Basic_.PM_FINAL_508c.pdf
 - **"CERT Triage & Mass Casualty Incidents" (Optional Unit)**, as used by the local CERT program. No publisher, date, or usage statement is printed in it.
+- **Milton Township, DuPage County CERT Code of Conduct**, provided by the program (cover and printed pages 1–4). It appears under Local Protocols in the program’s own wording. Individual names are left out.
 
-This is a **condensed field reference**. It is **not a FEMA product** and is **not endorsed by FEMA**, DHS, or the authors or publisher of the triage unit. Every item cites a page in its source. Manual misprints and contradictions are corrected or flagged in the app's **About & Sources** screen.
+This is a **condensed field reference**. It is **not a FEMA product** and is **not endorsed by FEMA**, DHS, or the authors or publisher of the triage unit. Every item cites a page in its source. When the app opens, a welcome page shows the Milton Township CERT mission statement, motto, and safety reminder; tap Continue to go to the home screen. Manual misprints and contradictions are corrected or flagged in the app's **About & Sources** screen.
 
 **Wording rule.** Under Illinois rules, a non-medical professional may make a determination of death only in cases of decapitation. The app therefore uses only "Black" for that triage category.
 

@@ -4,6 +4,22 @@
  "howToEdit": "Edit app/data/local-protocols.json: replace each null \"value\" with approved text and set \"placeholder\": false. Rebuild to refresh the offline cache.",
  "items": [
   {
+   "id": "code-of-conduct",
+   "title": "Code of Conduct (Milton Township CERT)",
+   "why": "The program's Code of Conduct: values, deployment, safety, professionalism, communication & privacy, and membership. Program wording kept verbatim; individual names omitted.",
+   "cite": [
+    "C-cover",
+    "C-1",
+    "C-2",
+    "C-3",
+    "C-4"
+   ],
+   "topic": null,
+   "page": "#/coc",
+   "placeholder": false,
+   "value": "Provided by the Milton Township CERT program. Open the full Code of Conduct."
+  },
+  {
    "id": "activation",
    "title": "Activation and call-out",
    "why": "How and when members self-activate or are called out is set by the sponsoring agency.",

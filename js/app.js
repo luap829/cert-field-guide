@@ -46,14 +46,21 @@
 
   // ---------- helpers ----------
   // 'U-N' = FEMA 2019 manual page; 'T-N' = program triage unit page N
+  // 'C-cover' / 'C-N' = Milton Township CERT Code of Conduct cover / printed page N
   function citeParts(c) {
-    const f = (c || []).filter((x) => !/^T-\d+$/.test(x)), t = (c || []).filter((x) => /^T-\d+$/.test(x)).map((x) => x.slice(2));
+    const isT = (x) => /^T-\d+$/.test(x), isC = (x) => /^C-(cover|\d+)$/.test(x);
+    const f = (c || []).filter((x) => !isT(x) && !isC(x)), t = (c || []).filter(isT).map((x) => x.slice(2));
+    const cc = (c || []).filter(isC).map((x) => x.slice(2));
     const out = [];
     if (f.length) out.push(f.join(', '));
     if (t.length) out.push('Triage unit p. ' + t.join(', '));
+    if (cc.length) {
+      const pg = cc.filter((x) => x !== 'cover');
+      out.push('Code of Conduct ' + [cc.includes('cover') ? 'cover' : '', pg.length ? 'p. ' + pg.join(', ') : ''].filter(Boolean).join(', '));
+    }
     return out;
   }
-  const citeTxt = (c) => { const p = citeParts(c); if (!p.length) return ''; return (c.some((x) => !/^T-/.test(x)) ? 'Manual ' : '') + p.join('; '); };
+  const citeTxt = (c) => { const p = citeParts(c); if (!p.length) return ''; return (c.some((x) => !/^[TC]-/.test(x)) ? 'Manual ' : '') + p.join('; '); };
   const citeSpan = (c) => (c && c.length ? ` <span class="cite">(${esc(citeParts(c).join('; '))})</span>` : '');
   const T = (id) => S.topics[id];
   const href = { topic: (id) => '#/t/' + id, section: (id) => '#/s/' + id, tool: (id) => '#/tool/' + id, walk: (k) => '#/walk/' + k + '/0' };
@@ -553,7 +560,17 @@
       S.index.push({ href: href.topic(id), title: t.title, where: s.title, body, nt: norm(t.title), nb: norm(body + ' ' + s.title) });
     }));
     TOOLS.forEach((t) => S.index.push({ href: href.tool(t.id), title: 'Quick tool: ' + t.title, where: 'Quick tools', body: t.sub, nt: norm(t.title), nb: norm(t.sub) }));
-    S.lp.items.forEach((it) => S.index.push({ href: '#/local', title: 'Local protocol: ' + it.title, where: 'Local Protocols', body: it.why, nt: norm(it.title), nb: norm(it.why + ' local protocol milton township') }));
+    const coc = S.c.codeOfConduct;
+    if (coc) {
+      const flat = (items) => (items || []).map((i) => i.text + ' ' + flat(i.items)).join(' ');
+      S.index.push({ href: '#/coc', title: coc.title, where: 'Local Protocols', body: coc.intro.text, nt: norm(coc.title), nb: norm(coc.intro.text + ' ' + coc.cover.mission + ' code of conduct rules milton township') });
+      coc.articles.forEach((a) => {
+        const body = (a.text ? a.text + ' ' : '') + flat(a.items);
+        S.index.push({ href: '#/coc/' + a.num, title: 'Code of Conduct ' + a.num + '. ' + a.title, where: 'Code of Conduct (Milton Township CERT)', body, nt: norm('code of conduct ' + a.title), nb: norm(body + ' code of conduct milton township') });
+      });
+    }
+    S.index.push({ href: '#/welcome', title: 'Welcome: Mission Statement & Motto', where: 'Welcome', body: S.c.app.welcome.mission, nt: norm('welcome mission statement motto'), nb: norm(S.c.app.welcome.mission + ' ' + S.c.app.welcome.motto + ' ' + S.c.app.welcome.safety) });
+    S.lp.items.forEach((it) => S.index.push({ href: it.page || '#/local', title: 'Local protocol: ' + it.title, where: 'Local Protocols', body: it.why, nt: norm(it.title), nb: norm(it.why + ' local protocol milton township') }));
     S.index.push({ href: '#/about', title: 'About & sources', where: 'About', body: 'FEMA credit, corrections, review flags, privacy', nt: 'about sources', nb: norm('fema credit copyright corrections review privacy version offline') });
     S.index.push({ href: '#/install', title: 'Add to Home Screen', where: 'Help', body: 'Install on iPhone, iPad, Android for offline use', nt: 'add to home screen install', nb: 'install iphone ipad android offline home screen' });
   }
@@ -607,16 +624,59 @@
     setHeader('Local Protocols', '#/'); setTab('local');
     const lp = S.lp;
     let h = `<div class="notice draft"><strong>${esc(lp.status)}</strong></div>`;
-    h += '<p>The FEMA manual leaves these items to your sponsoring agency. Until the Milton Township CERT program fills them in, follow your team leader and your training.</p>';
+    h += '<p>The FEMA manual leaves most of these items to your sponsoring agency. Until the Milton Township CERT program fills them in, follow your team leader and your training.</p>';
     h += lp.items.map((it) => {
       const linked = it.topic && T(it.topic) ? ` <a href="${href.topic(it.topic)}">Related topic</a>` : '';
-      const body = it.placeholder || !it.value
+      const body = it.page
+        ? `<div class="box ok">${esc(it.value)}<p><a class="btn primary" href="${esc(it.page)}">Open the Code of Conduct</a></p></div>`
+        : it.placeholder || !it.value
         ? `<div class="box local"><span class="lbl">Placeholder: Milton Township CERT program to fill in</span><span class="muted">Not yet provided.</span></div>`
         : `<div class="box ok">${esc(it.value)}</div>`;
       return `<section><h3>${esc(it.title)}</h3><p class="small">${esc(it.why)}${citeSpan(it.cite)}${linked}</p>${body}</section>`;
     }).join('');
     h += `<p class="small muted">For maintainers: ${esc(lp.howToEdit)}</p>`;
     v.innerHTML = h;
+  }
+
+  // ---------- code of conduct (program document, verbatim; names omitted) ----------
+  function cocItems(items) {
+    if (!items || !items.length) return '';
+    return '<ul class="coc">' + items.map((i) => `<li><span class="cl">${esc(i.label)}.</span><span class="ct">${esc(i.text)}${cocItems(i.items)}</span></li>`).join('') + '</ul>';
+  }
+  function vCoc(v, art) {
+    const coc = S.c.codeOfConduct;
+    setHeader('Code of Conduct', '#/local'); setTab('local');
+    if (!coc) return vNotFound(v);
+    let h = `<h2 class="coctitle">${esc(coc.title)}</h2>`;
+    h += `<p class="small">Source: ${esc(coc.source)} The program\u2019s wording is kept as written.</p>`;
+    h += `<div class="box info"><span class="lbl">Left out of this app</span><ul class="plain small">${coc.omissions.map((o) => `<li>${esc(o)}</li>`).join('')}</ul></div>`;
+    h += '<nav class="cocjump" aria-label="Sections">' + coc.articles.map((a) => `<a class="cocj" href="#/coc/${a.num}">${esc(a.num)}. ${esc(a.title)}</a>`).join('') + '</nav>';
+    h += `<section id="coc-cover"><h3>${esc(coc.cover.heading)}</h3><p>${esc(coc.cover.mission)}${citeSpan(coc.cover.cite)}</p>${coc.cover.paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}</section>`;
+    h += `<p class="cocintro">${esc(coc.intro.text)}${citeSpan(coc.intro.cite)}</p>`;
+    h += coc.articles.map((a) => `<section class="cocart" id="coc-${a.num}"><h3>${esc(a.num)}. ${esc(a.title)}${citeSpan(a.cite)}</h3>${a.text ? `<p>${esc(a.text)}</p>` : ''}${cocItems(a.items)}</section>`).join('');
+    h += '<p><a class="btn" href="#/local">Back to Local Protocols</a></p>';
+    v.innerHTML = h;
+    if (art) { const el = document.getElementById('coc-' + art); if (el) setTimeout(() => el.scrollIntoView(), 0); }
+  }
+
+  // ---------- welcome: its own route (#/welcome), shown once at app launch; merges the draft notice ----------
+  let welcomeNext = '#/';   // where Continue goes (the launch target, else home)
+  function vWelcome(v) {
+    const w = S.c.app.welcome;
+    setHeader('Welcome', null); setTab('');
+    document.body.classList.add('welcoming');
+    v.innerHTML = `<div class="wcard" id="welcome">
+      <img class="wlogo" src="icons/icon-192.png" alt="" width="64" height="64">
+      <h2 class="wtitle" id="wTitle">Milton Township CERT Field Guide</h2>
+      <p class="wsafety" id="wSafety">${esc(w.safety)}</p>
+      <button type="button" class="btn primary big wcontinue" id="wContinue">Continue</button>
+      <h3 id="wMissionH">${esc(w.missionHeading)}</h3><p id="wMission">${esc(w.mission)}</p>
+      <h3 id="wMottoH">${esc(w.mottoHeading)}</h3><p class="wmotto" id="wMotto">${esc(w.motto)}</p>
+      ${S.c.app.reviewed ? '' : '<div class="notice draft" id="wDraft"><strong>DRAFT: not for field use yet.</strong> This is a condensed reference made from the FEMA CERT Basic Training Participant Manual (2019) and the program\u2019s triage unit. It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong>. The medical and procedural content is <strong>pending review by a CERT instructor</strong>. Until it is reviewed, use it for study only. In an incident, follow your training, your team leader, and local protocols.</div>'}
+    </div>`;
+    const next = welcomeNext; welcomeNext = '#/';
+    $('#wContinue').onclick = () => location.replace(next);
+    setTimeout(() => { const b = $('#wContinue'); if (b) b.focus({ preventScroll: true }); }, 0);
   }
 
   // ---------- about & sources ----------
@@ -634,6 +694,7 @@
     const c = S.c, src = c.source;
     let h = '';
     h += `<div class="notice draft"><strong>${c.app.reviewed ? 'Reviewed.' : 'DRAFT: not for field use yet.'}</strong> ${esc(c.app.reviewNote)}</div>`;
+    h += '<p><a class="btn" href="#/welcome" id="aboutWelcome">Show welcome page (mission &amp; motto)</a></p>';
     h += '<h2>Source and credit</h2>';
     h += `<p>Content is condensed from the <strong>${esc(src.title)}</strong>, ${esc(src.edition)}, published by ${esc(src.publisher)}. Credit: FEMA / Emergency Management Institute.</p>`;
     h += `<p><a href="${esc(src.url)}" target="_blank" rel="noopener noreferrer">Open the full manual (PDF on ready.gov)</a> <span class="small muted">(needs internet)</span></p>`;
@@ -646,6 +707,10 @@
       h += `<p>The Triage section and the START triage tool come from <strong>${esc(ts.title)}</strong>, ${ts.pages} pages. Publisher: ${esc(ts.publisher.toLowerCase())}. ${esc(ts.date)} ${esc(ts.provenance)}</p>`;
       h += `<p class="small">${esc(ts.usage)} Citations like \u201CTriage unit p. 17\u201D refer to its printed page numbers.</p>`;
       h += '<div class="box caution"><span class="lbl">Important</span>The triage content is a <strong>condensed field reference</strong>. It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong> or by the authors or publisher of the triage unit. <strong>Triage content is pending instructor review.</strong></div>';
+    }
+    if (c.codeOfConduct) {
+      h += '<h2>Code of Conduct source</h2>';
+      h += `<p>The <a href="#/coc">Code of Conduct (Milton Township CERT)</a> under Local Protocols is the program\u2019s own document. ${esc(c.codeOfConduct.source)} Citations like \u201CCode of Conduct p. 2\u201D refer to its printed page numbers. Individual names are left out of this app.</p>`;
     }
     if (c.app.illinoisRule) {
       h += '<h2>Illinois rule: \u201CBlack\u201D only</h2>';
@@ -666,7 +731,7 @@
     paint();
     $('#sTheme').onclick = () => { cycleTheme(); paint(); };
     $('#sSize').onclick = () => { store.set('size', store.get('size', 'normal') === 'normal' ? 'large' : 'normal'); applyTheme(); paint(); };
-    $('#sReset').onclick = () => { if (confirm('Reset tally counts and settings on this device?')) { ['tally', 'tags', 'tagsUpdated', 'theme', 'size', 'installHintDismissed', 'draftAck'].forEach(store.del); applyTheme(); route(); } };
+    $('#sReset').onclick = () => { if (confirm('Reset tally counts and settings on this device?')) { ['tally', 'tags', 'tagsUpdated', 'theme', 'size', 'installHintDismissed'].forEach(store.del); applyTheme(); route(); } };
     offlineStatus().then(([ok, msg]) => { const e = $('#offStat'); if (e) { e.className = ok ? 'status-ok' : 'status-no'; e.textContent = (ok ? '\u2714 ' : '') + msg; } });
   }
 
@@ -690,7 +755,7 @@
   // ---------- router ----------
   function route() {
     const v = $('#view');
-    document.body.classList.remove('walking');
+    document.body.classList.remove('walking', 'welcoming');
     v.ontouchstart = v.ontouchend = null;
     const parts = (location.hash || '#/').slice(2).split('/').map((p) => { try { return decodeURIComponent(p); } catch (e) { return p; } });
     const [a, b, c2] = parts;
@@ -704,12 +769,14 @@
       else if (a === 'local') vLocal(v);
       else if (a === 'about') vAbout(v);
       else if (a === 'install') vInstall(v);
+      else if (a === 'coc') vCoc(v, b);
+      else if (a === 'welcome') vWelcome(v);
       else vNotFound(v);
     } catch (err) {
       v.innerHTML = '<p>Something went wrong showing this page.</p><p><a class="btn" href="#/">Home</a></p>';
       console.error(err);
     }
-    window.scrollTo(0, 0);
+    if (a !== 'coc' || !b) window.scrollTo(0, 0);
   }
   // walkthrough Next/Back replace history so the header Back returns to the tool
   document.addEventListener('click', (e) => {
@@ -729,10 +796,7 @@
   function draftNotice() {
     const reviewed = S.c.app.reviewed;
     $('#draftChip').hidden = reviewed;
-    if (reviewed || store.get('draftAck', null) === S.c.app.built) return;
-    const m = $('#draftModal'); m.hidden = false;
-    $('#draftOk').focus();
-    $('#draftOk').onclick = () => { store.set('draftAck', S.c.app.built); m.hidden = true; };
+    store.del('draftAck');   // old separate draft gate is merged into the welcome page
   }
 
   // ---------- service worker ----------
@@ -779,6 +843,10 @@
     S.c.sections.forEach((s) => s.topics.forEach((t) => { const id = s.id + '.' + t.id; S.topics[id] = t; S.sectionOf[id] = s.id; }));
     buildIndex();
     window.addEventListener('hashchange', route);
+    // App launch: show the welcome route first, then Continue goes to where the app was opened (default home).
+    // In-app navigation (Home button, brand, links) never passes through here, so it always goes straight to its screen.
+    const startHash = location.hash || '#/';
+    if (startHash !== '#/welcome') { welcomeNext = startHash; history.replaceState(null, '', '#/welcome'); }
     route();
     draftNotice();
     registerSW();
