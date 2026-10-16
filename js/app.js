@@ -14,10 +14,10 @@
 
   // ---------- Quick tools (from app-structure.md) ----------
   const TOOLS = [
-    { id: 'safe', n: 1, title: 'Is it safe?', sub: 'Damage level: rescue or not', hot: true,
-      main: ['safety.rescue-by-damage'], related: ['safety.damage-task-matrix', 'safety.sar-safety', 'safety.ppe'] },
-    { id: 'sizeup', n: 2, title: '9-step size-up', sub: 'Step-through checklist',
+    { id: 'sizeup', n: 1, wide: true, title: '9-step size-up', sub: 'Step-through checklist',
       walk: ['organization.size-up'], main: ['organization.size-up'], related: ['organization.size-up-worksheet', 'organization.team-structure'] },
+    { id: 'safe', n: 2, title: 'Is it safe?', sub: 'Damage level: rescue or not', hot: true,
+      main: ['safety.rescue-by-damage'], related: ['safety.damage-task-matrix', 'safety.sar-safety', 'safety.ppe'] },
     { id: 'triage', n: 3, title: 'START triage', sub: '30-2-Can Do: Immediate / Delayed / Minor / Black', hot: true, after: 'tags',
       walk: ['triage.six-steps'], main: ['triage.start-flow', 'triage.categories'], related: ['triage.rpm', 'triage.airway', 'triage.bleeding', 'triage.shock', 'triage.scene'] },
     { id: 'bleeding', n: 4, title: 'Stop the bleeding', sub: 'Pressure, tourniquet, shock, warmth', hot: true,
@@ -281,7 +281,7 @@
       h += `<div class="notice install compact"><a href="#/install" class="grow"><strong>Use it offline:</strong> ${isIOS() ? 'Safari <span class="kbd">Share \u2191</span> \u2192 <span class="kbd">Add to Home Screen</span>' : 'browser menu \u2192 Install app'} \u203A</a><button type="button" class="iconbtn x" id="hideInstall" aria-label="Hide install tip">\u2715</button></div>`;
     }
     h += `<a class="stopbar" href="${href.tool('safe')}"><span class="big" aria-hidden="true">\u270B</span><span>STOP: Is it safe?<small>Rescuer safety first. Check the damage level before you go in.</small></span></a>`;
-    h += '<h2>Quick tools</h2><div class="grid">' + TOOLS.map((t) => `<a class="tile${t.hot ? ' hot' : ''}" href="${href.tool(t.id)}"><span class="num">${t.n}</span><span class="tt">${esc(t.title)}</span><span class="ts">${esc(t.sub)}</span></a>`).join('') + '</div>';
+    h += '<h2>Quick tools</h2><div class="grid">' + TOOLS.map((t) => `<a class="tile${t.hot ? ' hot' : ''}${t.wide ? ' wide' : ''}" href="${href.tool(t.id)}"><span class="num">${t.n}</span><span class="tt">${esc(t.title)}</span><span class="ts">${esc(t.sub)}</span></a>`).join('') + '</div>';
     h += '<h2>Sections</h2><ul class="list sections">' + c.sections.map((s) => `<li><a class="listlink" href="${href.section(s.id)}"><span aria-hidden="true">${SECTION_ICON[s.id] || '\u2022'}</span><span class="grow">${esc(s.title)}<span class="sub">${s.topics.length} topics \u00B7 Units ${esc(s.units.join(', '))}</span></span></a></li>`).join('') + '</ul>';
     h += `<div class="footlinks"><a class="btn" href="#/local">\uD83D\uDCCD Local protocols</a><a class="btn" href="#/search">Search</a><a class="btn" href="#/about">About &amp; sources</a><a class="btn" href="#/install">Add to Home Screen</a></div>`;
     h += `<p class="small muted">Condensed from the FEMA CERT Basic Training Participant Manual (2019). Not a FEMA product; not endorsed by FEMA. Page numbers like (3-4) mean Unit 3, page 4.</p>`;
