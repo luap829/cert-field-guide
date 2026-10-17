@@ -13,7 +13,7 @@ Live app: https://luap829.github.io/cert-field-guide/
 
 This is a **condensed field reference**. It is **not a FEMA product** and is **not endorsed by FEMA**, DHS, or the authors or publisher of the triage unit. Every item cites a page in its source. When the app opens, a welcome page shows the Milton Township CERT mission statement, motto, and safety reminder; tap Continue to go to the home screen. Manual misprints and contradictions are corrected or flagged in the app's **About & Sources** screen.
 
-**Wording rule.** Under Illinois rules, a non-medical professional may make a determination of death only in cases of decapitation. The app therefore uses only "Black" for that triage category.
+**Wording rule.** Black is a CERT triage category, not a legal pronouncement of death; CERT volunteers do not pronounce death. In Illinois, death is certified by a physician, APRN, or PA, or by the coroner or medical examiner (410 ILCS 535/18; 55 ILCS 5/3-3013), and EMS rules on withholding CPR for obvious signs apply to licensed EMS personnel under medical direction, not bystanders (77 Ill. Adm. Code 515.380(c)). The app uses only "Status: Black" for that triage outcome.
 
 ## Privacy and offline design
 - **No data collected.** There are no accounts, analytics, cookies, trackers, or third-party fonts or scripts, and no network calls after the first load.

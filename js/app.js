@@ -714,8 +714,8 @@
       h += `<p>The <a href="#/coc">Code of Conduct (Milton Township CERT)</a> under Local Protocols is the program\u2019s own document. ${esc(c.codeOfConduct.source)} Citations like \u201CCode of Conduct p. 2\u201D refer to its printed page numbers. Individual names are left out of this app.</p>`;
     }
     if (c.app.illinoisRule) {
-      h += '<h2>Illinois rule: \u201CBlack\u201D only</h2>';
-      h += `<div class="box review"><span class="lbl">Program direction</span>${esc(c.app.illinoisRule)} The FEMA team report\u2019s third \u201CPeople\u201D field is relabeled \u201CBlack (per triage)\u201D. Guidance on handling people in the Black category is listed only under <a href="#/local">Local Protocols</a>.</div>`;
+      h += '<h2>Illinois: \u201CBlack\u201D is a triage category</h2>';
+      h += `<div class="box review" id="illinoisNote"><span class="lbl">Status: Black</span>${esc(c.app.illinoisRule)}${(c.app.illinoisRuleCite || []).length ? ' (' + c.app.illinoisRuleCite.map((x) => `<span class="cite">${esc(x)}</span>`).join('; ') + ')' : ''} The FEMA team report\u2019s third \u201CPeople\u201D field is relabeled \u201CBlack (per triage)\u201D. Guidance on handling people in the Black category is listed only under <a href="#/local">Local Protocols</a>.</div>`;
     }
     h += '<h2>Corrections</h2><p>Misprints in the manual that this app corrects:</p>';
     h += c.corrections.map((r) => `<div class="box correction"><span class="lbl">${esc(r.title)}</span>${esc(r.text)}${citeSpan(r.cite)} <a href="${href.topic(r.topic)}">View topic</a></div>`).join('');
