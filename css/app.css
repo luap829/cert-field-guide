@@ -140,7 +140,8 @@ a.notice.compact { color: inherit; display: block; }
 .chip.reference { color: var(--info); background: var(--infobg); }
 .chip.background { color: var(--muted); background: var(--card); }
 .chip.review { color: var(--review); background: var(--reviewbg); }
-.cite { font-size: .8rem; color: var(--muted); font-weight: 600; white-space: nowrap; }
+.cite { font-size: .8rem; color: var(--muted); font-weight: 600; white-space: normal; }
+.cite .nw, .sub .nw { white-space: nowrap; }
 .metarow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0 10px; }
 
 /* boxes */

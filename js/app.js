@@ -45,23 +45,25 @@
   const PRI_LABEL = { critical: 'Critical', field: 'Field', reference: 'Reference', background: 'Background' };
 
   // ---------- helpers ----------
-  // 'U-N' = FEMA 2019 manual page; 'T-N' = program triage unit page N
+  // 'U-N' = FEMA 2019 manual page; 'T-N' = FEMA CERT Triage & MCI unit page N
   // 'C-cover' / 'C-N' = Milton Township CERT Code of Conduct cover / printed page N
+  const FEMA_CITE = 'FEMA CERT Basic PM (2019)', TRIAGE_CITE = 'FEMA CERT Triage & MCI unit', COC_CITE = 'Milton Twp. CERT Code of Conduct';
   function citeParts(c) {
     const isT = (x) => /^T-\d+$/.test(x), isC = (x) => /^C-(cover|\d+)$/.test(x);
     const f = (c || []).filter((x) => !isT(x) && !isC(x)), t = (c || []).filter(isT).map((x) => x.slice(2));
     const cc = (c || []).filter(isC).map((x) => x.slice(2));
     const out = [];
-    if (f.length) out.push(f.join(', '));
-    if (t.length) out.push('Triage unit p. ' + t.join(', '));
+    if (f.length) out.push(FEMA_CITE + ', p. ' + f.join(', '));
+    if (t.length) out.push(TRIAGE_CITE + ', p. ' + t.join(', '));
     if (cc.length) {
       const pg = cc.filter((x) => x !== 'cover');
-      out.push('Code of Conduct ' + [cc.includes('cover') ? 'cover' : '', pg.length ? 'p. ' + pg.join(', ') : ''].filter(Boolean).join(', '));
+      out.push(COC_CITE + ', ' + [cc.includes('cover') ? 'cover' : '', pg.length ? 'p. ' + pg.join(', ') : ''].filter(Boolean).join(', '));
     }
     return out;
   }
-  const citeTxt = (c) => { const p = citeParts(c); if (!p.length) return ''; return (c.some((x) => !/^[TC]-/.test(x)) ? 'Manual ' : '') + p.join('; '); };
-  const citeSpan = (c) => (c && c.length ? ` <span class="cite">(${esc(citeParts(c).join('; '))})</span>` : '');
+  // citeHtml: wraps at ', ' / '; ' only, so a label or page number never splits and long source names never overflow a phone screen
+  const citeHtml = (c) => citeParts(c).map((p) => p.split(', ').map((x) => `<span class="nw">${esc(x)}</span>`).join(', ')).join('; ');
+  const citeSpan = (c) => (c && c.length ? ` <span class="cite">(${citeHtml(c)})</span>` : '');
   const T = (id) => S.topics[id];
   const href = { topic: (id) => '#/t/' + id, section: (id) => '#/s/' + id, tool: (id) => '#/tool/' + id, walk: (k) => '#/walk/' + k + '/0' };
   const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -73,7 +75,7 @@
     tb.classList.toggle('sub', !!title);
     $('#backBtn').hidden = !back;
     $('#backBtn').dataset.to = back || '';
-    document.title = title ? title + ' \u2013 CERT Field Guide' : 'CERT Field Guide';
+    document.title = title ? title + ' \u2013 CERT Field Guide (unofficial draft)' : 'CERT Field Guide (unofficial draft)';
   }
   function setTab(name) { $$('.tabbar a').forEach((a) => a.classList.toggle('on', a.dataset.tab === name)); }
 
@@ -135,7 +137,7 @@
     const flags = (t.review && t.review.length) ? '<span class="chip review">Review</span>' : '';
     let h = '';
     if (opts.heading !== false) h += `<h2>${esc(t.title)}</h2>`;
-    h += `<div class="metarow">${priChip(t.fieldPriority)}${flags}<span class="cite">${esc(citeTxt(t.cite))}</span></div>`;
+    h += `<div class="metarow">${priChip(t.fieldPriority)}${flags}<span class="cite">${citeHtml(t.cite)}</span></div>`;
     if (t.summary) h += `<p class="summary">${esc(t.summary)}</p>`;
     h += warningsHTML(t.warnings);
     h += reviewHTML(t);
@@ -265,7 +267,7 @@
       msg.textContent = 'Counting\u2026';
       timer = setInterval(() => {
         n--; cnt.textContent = n;
-        if (n <= 0) { clearInterval(timer); box.classList.add('done'); msg.textContent = 'Not out? LEAVE NOW. Shut doors behind you. (6-1, 6-9)'; if (navigator.vibrate) navigator.vibrate([300, 100, 300]); }
+        if (n <= 0) { clearInterval(timer); box.classList.add('done'); msg.textContent = 'Not out? LEAVE NOW. Shut doors behind you. (FEMA CERT Basic PM (2019), p. 6-1, 6-9)'; if (navigator.vibrate) navigator.vibrate([300, 100, 300]); }
       }, 1000);
     });
     window.addEventListener('hashchange', () => clearInterval(timer), { once: true });
@@ -284,7 +286,7 @@
     h += '<h2>Quick tools</h2><div class="grid">' + TOOLS.map((t) => `<a class="tile${t.hot ? ' hot' : ''}${t.wide ? ' wide' : ''}" href="${href.tool(t.id)}"><span class="num">${t.n}</span><span class="tt">${esc(t.title)}</span><span class="ts">${esc(t.sub)}</span></a>`).join('') + '</div>';
     h += '<h2>Sections</h2><ul class="list sections">' + c.sections.map((s) => `<li><a class="listlink" href="${href.section(s.id)}"><span aria-hidden="true">${SECTION_ICON[s.id] || '\u2022'}</span><span class="grow">${esc(s.title)}<span class="sub">${s.topics.length} topics \u00B7 Units ${esc(s.units.join(', '))}</span></span></a></li>`).join('') + '</ul>';
     h += `<div class="footlinks"><a class="btn" href="#/local">\uD83D\uDCCD Local protocols</a><a class="btn" href="#/search">Search</a><a class="btn" href="#/about">About &amp; sources</a><a class="btn" href="#/install">Add to Home Screen</a></div>`;
-    h += `<p class="small muted">Condensed from the FEMA CERT Basic Training Participant Manual (2019). Not a FEMA product; not endorsed by FEMA. Page numbers like (3-4) mean Unit 3, page 4.</p>`;
+    h += `<p class="small muted" id="homeFoot">Unofficial draft. Condensed from the FEMA CERT Basic Training Participant Manual (2019) and the FEMA CERT Triage &amp; MCI unit. Not a FEMA product; not endorsed by FEMA. Not produced or endorsed by Milton Township or Milton Township CERT. Citations like (FEMA CERT Basic PM (2019), p. 3-4) mean Unit 3, page 4.</p>`;
     v.innerHTML = h;
     const hb = $('#hideInstall'); if (hb) hb.addEventListener('click', () => { store.set('installHintDismissed', true); route(); });
   }
@@ -336,7 +338,7 @@
     if (tool.after === 'tags') mountTagTally(v);
     if (tool.related && tool.related.length) {
       const r = document.createElement('div');
-      r.innerHTML = '<h2>Related</h2><ul class="list">' + tool.related.map((tid) => T(tid) ? `<li><a class="listlink" href="${href.topic(tid)}"><span class="grow">${esc(T(tid).title)}<span class="sub">${esc(citeTxt(T(tid).cite))}</span></span></a></li>` : '').join('') + '</ul>';
+      r.innerHTML = '<h2>Related</h2><ul class="list">' + tool.related.map((tid) => T(tid) ? `<li><a class="listlink" href="${href.topic(tid)}"><span class="grow">${esc(T(tid).title)}<span class="sub">${citeHtml(T(tid).cite)}</span></span></a></li>` : '').join('') + '</ul>';
       v.appendChild(r);
     }
   }
@@ -366,7 +368,7 @@
     let h = `<div class="walk"><div class="wtop"><span class="prog">${i + 1} / ${cards.length}</span><a class="btn" href="${back}">Exit</a></div><div class="bar"><i class="w${pct}"></i></div>`;
     h += '<div class="wstep">';
     if (ids.length > 1) h += `<div class="wtopic">${esc(c.title)}</div>`;
-    h += `<div class="wkind">${esc(c.kind)}</div><p class="wtext">${esc(c.text)}</p><p class="cite">${esc(citeTxt(c.cite))}</p></div>`;
+    h += `<div class="wkind">${esc(c.kind)}</div><p class="wtext">${esc(c.text)}</p><p class="cite">${citeHtml(c.cite)}</p></div>`;
     if (c.first && c.review && c.review.length) h += c.review.map((r) => `<div class="box review"><span class="lbl">\u2691 Instructor review</span>${esc(r.text)}</div>`).join('');
     if (c.warn.length) h += `<details class="pinned"${c.first ? ' open' : ''}><summary>\u26D4 ${c.warn.length} warning${c.warn.length > 1 ? 's' : ''} for ${esc(c.title)}</summary>${warningsHTML(c.warn)}</details>`;
     h += '</div>';
@@ -412,7 +414,7 @@
     }
     function render() {
       const c = counts();
-      let h = `<div class="box info"><span class="lbl">Counts only</span>Based on the "Report from Response Team" block of the Briefing Assignment Form (2-17). No names, conditions, or locations. Counts stay on this device until you reset them.</div>`;
+      let h = `<div class="box info"><span class="lbl">Counts only</span>Based on the "Report from Response Team" block of the Briefing Assignment Form (FEMA CERT Basic PM (2019), p. 2-17). No names, conditions, or locations. Counts stay on this device until you reset them.</div>`;
       h += groups.map((g) => `<div class="tgroup"><h3>${esc(g.cat)}</h3>${g.fields.map((f) => {
         const k = g.cat + '|' + f;
         return `<div class="trow"><span class="tl">${esc(f)}</span><button type="button" class="minus" data-k="${esc(k)}" aria-label="${esc(g.cat + ' ' + f)} minus one">\u2212</button><span class="tv" aria-live="polite">${c[k] || 0}</span><button type="button" class="plus" data-k="${esc(k)}" aria-label="${esc(g.cat + ' ' + f)} plus one">+</button></div>`;
@@ -439,7 +441,7 @@
     render();
   }
 
-  // ---------- triage tag tally (counts only; categories from the triage unit, T-16 / T-20) ----------
+  // ---------- triage tag tally (counts only; categories from the FEMA CERT Triage & MCI unit, T-16 / T-20) ----------
   function mountTagTally(v) {
     const el = document.createElement('div');
     el.className = 'tagtally';
@@ -453,10 +455,10 @@
     };
     function render() {
       const t = store.get('tags', {});
-      let h = `<h2>Triage tag tally</h2><div class="box info"><span class="lbl">Counts only</span>A quick count of casualties by category (T-19, T-20). No names, conditions, or locations. Counts stay on this device until you reset them.</div>`;
+      let h = `<h2>Triage tag tally</h2><div class="box info"><span class="lbl">Counts only</span>A quick count of casualties by category (FEMA CERT Triage &amp; MCI unit, p. 19, 20). No names, conditions, or locations. Counts stay on this device until you reset them.</div>`;
       h += '<div class="tgroup">' + cats.map((k) => `<div class="trow tagrow tag-${k}"><span class="tl"><span class="tagdot tag-${k}" aria-hidden="true"></span>${CAT[k][0]}${k === 'black' ? '' : ` <small>${esc(CAT[k][1])}</small>`}</span><button type="button" class="minus" data-tag="${k}" aria-label="${CAT[k][0]} minus one">\u2212</button><span class="tv" aria-live="polite" data-tv="${k}">${t[k] || 0}</span><button type="button" class="plus" data-tag="${k}" aria-label="${CAT[k][0]} plus one">+</button></div>`).join('') + '</div>';
       h += `<pre class="readout tagreadout">${esc(readout())}</pre><div class="btnrow"><button type="button" class="btn" id="tagCopy">Copy tag read-out</button><button type="button" class="btn warn" id="tagReset">Reset tag counts</button></div>`;
-      h += '<p class="small muted">Record official numbers on your program\u2019s documentation form. Never abbreviate Black to \u201CD\u201D (T-16). Illinois rule: use only \u201CBlack\u201D for this category. <a href="#/about">Why</a></p>';
+      h += '<p class="small muted">Record official numbers on your program\u2019s documentation form. Never abbreviate Black to \u201CD\u201D (FEMA CERT Triage &amp; MCI unit, p. 16). Illinois rule: use only \u201CBlack\u201D for this category. <a href="#/about">Why</a></p>';
       el.innerHTML = h;
     }
     el.addEventListener('click', (e) => {
@@ -511,7 +513,7 @@
     }
     function render() {
       const f = (k, label, ph, type) => `<div class="field"><label for="m_${k}">${label}</label><input id="m_${k}" data-k="${k}" ${type === 'num' ? 'inputmode="numeric" pattern="[0-9]*"' : ''} autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(ph)}" value="${esc(st[k])}"></div>`;
-      let h = `<div class="box info"><span class="lbl">Not saved</span>This builder shows what to write. Nothing you type is stored. Mark next to the door, not on it or where it swings (7-15).</div>`;
+      let h = `<div class="box info"><span class="lbl">Not saved</span>This builder shows what to write. Nothing you type is stored. Mark next to the door, not on it or where it swings (FEMA CERT Basic PM (2019), p. 7-15).</div>`;
       h += `<div class="seg" role="group" aria-label="Entry or exit"><button type="button" data-mode="entry" class="${st.mode === 'entry' ? 'on' : ''}">Entering (/)</button><button type="button" data-mode="exit" class="${st.mode === 'exit' ? 'on' : ''}">Exiting (X)</button></div>`;
       h += `<div class="marking"><div class="svgwrap">${svg()}</div><div class="fields">`;
       h += f('id', 'Left (9 o\u2019clock): agency / group ID', 'e.g. CERT 3');
@@ -668,11 +670,11 @@
     document.body.classList.add('welcoming');
     v.innerHTML = `<div class="wcard" id="welcome">
       <div class="wlockup"><img class="lk-light" src="icons/lockup-light.svg" alt="CERT Field Guide" width="273" height="100"><img class="lk-dark" src="icons/lockup-dark.svg" alt="CERT Field Guide" width="273" height="100"></div>
-      <h2 class="wtitle" id="wTitle">Milton Township CERT Field Guide</h2>
+      <h2 class="wtitle" id="wTitle">CERT Field Guide (unofficial draft)</h2>
       <h3 id="wMottoH">${esc(w.mottoHeading)}</h3><p class="wmotto" id="wMotto">${esc(w.motto)}</p>
       <p class="wsafety" id="wSafety">${esc(w.safety)}</p>
       <div class="wgo"><button type="button" class="btn primary wcontinue" id="wContinue">Continue to main menu <span aria-hidden="true">\u2192</span></button></div>
-      ${S.c.app.reviewed ? '' : '<div class="notice draft" id="wDraft"><strong>DRAFT: not for field use yet.</strong> This is a condensed reference made from the FEMA CERT Basic Training Participant Manual (2019) and the program\u2019s triage unit. It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong>. The medical and procedural content is <strong>pending review by a CERT instructor</strong>. Until it is reviewed, use it for study only. In an incident, follow your training, your team leader, and local protocols.</div>'}
+      ${S.c.app.reviewed ? '' : '<div class="notice draft" id="wDraft"><strong>DRAFT: not for field use yet.</strong> This is a condensed reference made from the FEMA CERT Basic Training Participant Manual (2019) and the FEMA CERT Triage &amp; MCI unit (a copy provided by the Milton Township CERT program). It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong>. <strong>Not produced or endorsed by Milton Township or Milton Township CERT.</strong> The medical and procedural content is <strong>pending review by a CERT instructor</strong>. Until it is reviewed, use it for study only. In an incident, follow your training, your team leader, and local protocols.</div>'}
       <h3 id="wMissionH">${esc(w.missionHeading)}</h3><p id="wMission">${esc(w.mission)}</p>
     </div>`;
     const next = welcomeNext; welcomeNext = '#/';
@@ -696,6 +698,7 @@
     let h = '';
     h += `<div class="notice draft"><strong>${c.app.reviewed ? 'Reviewed.' : 'DRAFT: not for field use yet.'}</strong> ${esc(c.app.reviewNote)}</div>`;
     h += '<p><a class="btn" href="#/welcome" id="aboutWelcome">Show welcome page (mission &amp; motto)</a></p>';
+    h += '<div class="box caution" id="aboutNotEndorsed"><span class="lbl">Unofficial</span>This is an unofficial draft. Not produced or endorsed by Milton Township or Milton Township CERT.</div>';
     h += '<h2>Source and credit</h2>';
     h += `<p>Content is condensed from the <strong>${esc(src.title)}</strong>, ${esc(src.edition)}, published by ${esc(src.publisher)}. Credit: FEMA / Emergency Management Institute.</p>`;
     h += `<p><a href="${esc(src.url)}" target="_blank" rel="noopener noreferrer">Open the full manual (PDF on ready.gov)</a> <span class="small muted">(needs internet)</span></p>`;
@@ -705,13 +708,13 @@
     const ts = c.triageSource;
     if (ts) {
       h += '<h2>Triage source</h2>';
-      h += `<p>The Triage section and the START triage tool come from <strong>${esc(ts.title)}</strong>, ${ts.pages} pages. Publisher: ${esc(ts.publisher.toLowerCase())}. ${esc(ts.date)} ${esc(ts.provenance)}</p>`;
-      h += `<p class="small">${esc(ts.usage)} Citations like \u201CTriage unit p. 17\u201D refer to its printed page numbers.</p>`;
-      h += '<div class="box caution"><span class="lbl">Important</span>The triage content is a <strong>condensed field reference</strong>. It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong> or by the authors or publisher of the triage unit. <strong>Triage content is pending instructor review.</strong></div>';
+      h += `<p>The Triage section and the START triage tool come from <strong>${esc(ts.title)}</strong>, ${ts.pages} pages. Author: FEMA; no author or publisher statement is printed in the document itself. ${esc(ts.date)} ${esc(ts.provenance)}</p>`;
+      h += `<p class="small">${esc(ts.usage)} Citations like \u201CFEMA CERT Triage &amp; MCI unit, p. 17\u201D refer to its printed page numbers.</p>`;
+      h += '<div class="box caution"><span class="lbl">Important</span>The triage content is a <strong>condensed field reference</strong>. It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong>. <strong>Triage content is pending instructor review.</strong></div>';
     }
     if (c.codeOfConduct) {
       h += '<h2>Code of Conduct source</h2>';
-      h += `<p>The <a href="#/coc">Code of Conduct (Milton Township CERT)</a> under Local Protocols is the program\u2019s own document. ${esc(c.codeOfConduct.source)} Citations like \u201CCode of Conduct p. 2\u201D refer to its printed page numbers. Individual names are left out of this app.</p>`;
+      h += `<p>The <a href="#/coc">Code of Conduct (Milton Township CERT)</a> under Local Protocols is the program\u2019s own document. ${esc(c.codeOfConduct.source)} Citations like \u201CMilton Twp. CERT Code of Conduct, p. 2\u201D refer to its printed page numbers. Individual names are left out of this app.</p>`;
     }
     if (c.app.illinoisRule) {
       h += '<h2>Illinois: \u201CBlack\u201D is a triage category</h2>';
@@ -721,7 +724,7 @@
     h += c.corrections.map((r) => `<div class="box correction"><span class="lbl">${esc(r.title)}</span>${esc(r.text)}${citeSpan(r.cite)} <a href="${href.topic(r.topic)}">View topic</a></div>`).join('');
     h += '<h2>Flagged for instructor review</h2><p>Where the manual contradicts itself, both versions are shown and flagged. Figures transcribed from images are flagged for verification.</p><ul class="list">';
     h += c.reviewFlags.map((r) => `<li><a class="listlink" href="${href.topic(r.topic)}"><span class="grow">${esc(r.title)}<span class="sub">${esc(r.text)}</span></span></a></li>`).join('') + '</ul>';
-    h += '<p class="small">Not included: CPR (neither source teaches it, 3-1, T-5). The FEMA 2019 manual names triage only as a function (4-4); triage comes from the program\u2019s triage unit above.</p>';
+    h += '<p class="small">Not included: CPR (neither source teaches it: FEMA CERT Basic PM (2019), p. 3-1; FEMA CERT Triage &amp; MCI unit, p. 5). The FEMA 2019 manual names triage only as a function (FEMA CERT Basic PM (2019), p. 4-4); triage comes from the FEMA CERT Triage &amp; MCI unit above.</p>';
     h += '<h2>Privacy and security</h2><ul class="plain">' + c.privacy.rules.map((r) => `<li>${esc(r)}</li>`).join('') + '<li>No cookies, trackers, ads, fonts, or scripts from other sites. Everything ships with the app.</li></ul>';
     h += '<h2>Offline</h2><p id="offStat">Checking\u2026</p><p><a class="btn" href="#/install">How to add to Home Screen</a></p>';
     h += '<h2>Settings</h2><div class="btnrow"><button type="button" class="btn" id="sTheme"></button><button type="button" class="btn" id="sSize"></button></div>';

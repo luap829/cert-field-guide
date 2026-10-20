@@ -79,7 +79,7 @@
   {
    "id": "triage",
    "title": "Patient assessment and triage method",
-   "why": "The FEMA 2019 manual names triage only as a function (4-4). The program's triage unit teaches START (\"30-2-Can Do\").",
+   "why": "The FEMA 2019 manual names triage only as a function (FEMA CERT Basic PM (2019), p. 4-4). The FEMA CERT Triage & MCI unit teaches START (\"30-2-Can Do\").",
    "cite": [
     "4-4",
     "T-5",
@@ -87,7 +87,7 @@
    ],
    "topic": "triage.start-flow",
    "placeholder": false,
-   "value": "START, per the program's \"CERT Triage & Mass Casualty Incidents\" unit. See the Triage section and the START triage quick tool. (Pending instructor review.)"
+   "value": "START, per the \"CERT Triage & Mass Casualty Incidents\" unit (FEMA; copy provided by the Milton Township CERT program). See the Triage section and the START triage quick tool. (Pending instructor review.)"
   },
   {
    "id": "tags",

@@ -1,7 +1,7 @@
 {
-  "name": "CERT Field Guide (Draft)",
-  "short_name": "CERT Guide",
-  "description": "Offline condensed field reference based on the FEMA CERT Basic Training Participant Manual (2019). Not a FEMA product.",
+  "name": "Unofficial CERT Field Guide (Draft)",
+  "short_name": "Unofficial CERT Guide",
+  "description": "Offline condensed field reference based on the FEMA CERT Basic Training Participant Manual (2019). Not a FEMA product. Not produced or endorsed by Milton Township or Milton Township CERT.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
