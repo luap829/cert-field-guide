@@ -69,13 +69,15 @@
   const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+  const APP_NAME = 'CERT Field Guide - Milton Township';
+  const LOGO_ALT = 'CERT: Community Emergency Response Team logo';
   function setHeader(title, back) {
     const tb = $('#topbar');
     $('#topTitle').textContent = title || '';
     tb.classList.toggle('sub', !!title);
     $('#backBtn').hidden = !back;
     $('#backBtn').dataset.to = back || '';
-    document.title = title ? title + ' \u2013 CERT Field Guide (unofficial draft)' : 'CERT Field Guide (unofficial draft)';
+    document.title = title ? title + ' \u2013 ' + APP_NAME : APP_NAME;
   }
   function setTab(name) { $$('.tabbar a').forEach((a) => a.classList.toggle('on', a.dataset.tab === name)); }
 
@@ -286,7 +288,7 @@
     h += '<h2>Quick tools</h2><div class="grid">' + TOOLS.map((t) => `<a class="tile${t.hot ? ' hot' : ''}${t.wide ? ' wide' : ''}" href="${href.tool(t.id)}"><span class="num">${t.n}</span><span class="tt">${esc(t.title)}</span><span class="ts">${esc(t.sub)}</span></a>`).join('') + '</div>';
     h += '<h2>Sections</h2><ul class="list sections">' + c.sections.map((s) => `<li><a class="listlink" href="${href.section(s.id)}"><span aria-hidden="true">${SECTION_ICON[s.id] || '\u2022'}</span><span class="grow">${esc(s.title)}<span class="sub">${s.topics.length} topics \u00B7 Units ${esc(s.units.join(', '))}</span></span></a></li>`).join('') + '</ul>';
     h += `<div class="footlinks"><a class="btn" href="#/local">\uD83D\uDCCD Local protocols</a><a class="btn" href="#/search">Search</a><a class="btn" href="#/about">About &amp; sources</a><a class="btn" href="#/install">Add to Home Screen</a></div>`;
-    h += `<p class="small muted" id="homeFoot">Unofficial draft. Condensed from the FEMA CERT Basic Training Participant Manual (2019) and the FEMA CERT Triage &amp; MCI unit. Not a FEMA product; not endorsed by FEMA. Not produced or endorsed by Milton Township or Milton Township CERT. Citations like (FEMA CERT Basic PM (2019), p. 3-4) mean Unit 3, page 4.</p>`;
+    h += `<p class="small muted" id="homeFoot">${esc(APP_NAME)}. Condensed from the FEMA CERT Basic Training Participant Manual (2019) and the FEMA CERT Triage &amp; MCI unit. Not a FEMA product; not endorsed by FEMA. Citations like (FEMA CERT Basic PM (2019), p. 3-4) mean Unit 3, page 4.</p>`;
     v.innerHTML = h;
     const hb = $('#hideInstall'); if (hb) hb.addEventListener('click', () => { store.set('installHintDismissed', true); route(); });
   }
@@ -662,19 +664,18 @@
     if (art) { const el = document.getElementById('coc-' + art); if (el) setTimeout(() => el.scrollIntoView(), 0); }
   }
 
-  // ---------- welcome: its own route (#/welcome), shown once at app launch; merges the draft notice ----------
+  // ---------- welcome: its own route (#/welcome), shown once at app launch (official CERT logo, name, motto, safety, mission) ----------
   let welcomeNext = '#/';   // where Continue goes (the launch target, else home)
   function vWelcome(v) {
     const w = S.c.app.welcome;
     setHeader('Welcome', null); setTab('');
     document.body.classList.add('welcoming');
     v.innerHTML = `<div class="wcard" id="welcome">
-      <div class="wlockup"><img class="lk-light" src="icons/lockup-light.svg" alt="CERT Field Guide" width="273" height="100"><img class="lk-dark" src="icons/lockup-dark.svg" alt="CERT Field Guide" width="273" height="100"></div>
-      <h2 class="wtitle" id="wTitle">CERT Field Guide (unofficial draft)</h2>
+      <div class="logowrap" id="wLogo"><div class="logoplate"><img class="certlogo" src="icons/CERT_LOGO_RGB.svg" alt="${LOGO_ALT}" width="230" height="130"></div></div>
+      <h2 class="wtitle" id="wTitle">${esc(APP_NAME)}</h2>
       <h3 id="wMottoH">${esc(w.mottoHeading)}</h3><p class="wmotto" id="wMotto">${esc(w.motto)}</p>
       <p class="wsafety" id="wSafety">${esc(w.safety)}</p>
       <div class="wgo"><button type="button" class="btn primary wcontinue" id="wContinue">Continue to main menu <span aria-hidden="true">\u2192</span></button></div>
-      ${S.c.app.reviewed ? '' : '<div class="notice draft" id="wDraft"><strong>DRAFT: not for field use yet.</strong> This is a condensed reference made from the FEMA CERT Basic Training Participant Manual (2019) and the FEMA CERT Triage &amp; MCI unit (a copy provided by the Milton Township CERT program). It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong>. <strong>Not produced or endorsed by Milton Township or Milton Township CERT.</strong> The medical and procedural content is <strong>pending review by a CERT instructor</strong>. Until it is reviewed, use it for study only. In an incident, follow your training, your team leader, and local protocols.</div>'}
       <h3 id="wMissionH">${esc(w.missionHeading)}</h3><p id="wMission">${esc(w.mission)}</p>
     </div>`;
     const next = welcomeNext; welcomeNext = '#/';
@@ -698,7 +699,10 @@
     let h = '';
     h += `<div class="notice draft"><strong>${c.app.reviewed ? 'Reviewed.' : 'DRAFT: not for field use yet.'}</strong> ${esc(c.app.reviewNote)}</div>`;
     h += '<p><a class="btn" href="#/welcome" id="aboutWelcome">Show welcome page (mission &amp; motto)</a></p>';
-    h += '<div class="box caution" id="aboutNotEndorsed"><span class="lbl">Unofficial</span>This is an unofficial draft. Not produced or endorsed by Milton Township or Milton Township CERT.</div>';
+    h += `<div class="logowrap" id="aboutLogo"><div class="logoplate"><img class="certlogo" src="icons/CERT_LOGO_RGB.svg" alt="${LOGO_ALT}" width="230" height="130"></div></div>`;
+    h += `<h2 class="apptitle" id="aboutName">${esc(APP_NAME)}</h2>`;
+    h += '<p class="small" id="logoCredit">CERT logo: National CERT program (FEMA), used by the registered Milton Township CERT program per the CERT Logo Usage Guide.</p>';
+    h += '<h2 id="ackH">Acknowledgments</h2><p id="ack">The CERT Field Guide - Milton Township app was designed and built by Paul Lindner.</p>';
     h += '<h2>Source and credit</h2>';
     h += `<p>Content is condensed from the <strong>${esc(src.title)}</strong>, ${esc(src.edition)}, published by ${esc(src.publisher)}. Credit: FEMA / Emergency Management Institute.</p>`;
     h += `<p><a href="${esc(src.url)}" target="_blank" rel="noopener noreferrer">Open the full manual (PDF on ready.gov)</a> <span class="small muted">(needs internet)</span></p>`;
