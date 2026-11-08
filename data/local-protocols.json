@@ -6,7 +6,7 @@
   {
    "id": "code-of-conduct",
    "title": "Code of Conduct (Milton Township CERT)",
-   "why": "The program's Code of Conduct: values, deployment, safety, professionalism, communication & privacy, and membership. Program wording kept verbatim; individual names omitted.",
+   "why": "The program's Code of Conduct: values, deployment, safety, professionalism, communication & privacy, and membership. Program wording kept verbatim.",
    "cite": [
     "C-cover",
     "C-1",
@@ -55,8 +55,8 @@
     "1-23"
    ],
    "topic": "organization.mobilization",
-   "placeholder": true,
-   "value": null
+   "placeholder": false,
+   "value": "Follow the CERT incident commander (IC) identified during your callout. Per CERT procedures, the first volunteer at the incident will assume temporary IC duties until the assigned IC arrives on scene."
   },
   {
    "id": "comms",
@@ -73,8 +73,8 @@
    "why": "Program to supply verified local numbers.",
    "cite": [],
    "topic": null,
-   "placeholder": true,
-   "value": null
+   "placeholder": false,
+   "value": "Emergency - In case of Emergency contact 911. For CERT issues, the IC will provide their mobile number at time of deployment.\n\nNon-Emergency - Milton Township CERT\n\nPrimary Contact - Dave Sezonov, CERT Director, (630) 668-1616, d.sezonov@miltontownship.net\n\nAlternate Contact - Debbie Mrozinski, CERT Deputy Director (Coordinator), (630) 668-1616, d.mrozinski@miltontownship.net"
   },
   {
    "id": "triage",
@@ -87,7 +87,7 @@
    ],
    "topic": "triage.start-flow",
    "placeholder": false,
-   "value": "START, per the \"CERT Triage & Mass Casualty Incidents\" unit (FEMA; copy provided by the Milton Township CERT program). See the Triage section and the START triage quick tool. (Pending instructor review.)"
+   "value": "Milton Township CERT uses the START (\"30-2-Can Do\") method."
   },
   {
    "id": "tags",
@@ -114,7 +114,7 @@
   {
    "id": "black-handling",
    "title": "Handling and moving people in the Black category (including any separate holding area)",
-   "why": "The FEMA manual and the triage unit both give guidance on this and defer to local laws and the sponsoring agency. Black is a triage category, not a pronouncement of death, and CERT volunteers do not pronounce death (see About & Sources). The app leaves handling to your program protocol.",
+   "why": "The FEMA manual and the triage unit both give guidance on this and defer to local laws and the sponsoring agency. Black is a triage category, not a pronouncement of death, and CERT volunteers do not pronounce death (see About & Sources).",
    "cite": [
     "5-12",
     "T-6",
@@ -122,8 +122,8 @@
     "T-18"
    ],
    "topic": null,
-   "placeholder": true,
-   "value": null
+   "placeholder": false,
+   "value": "People identified with black triage tags are not to be moved except to allow rescue of other survivors."
   },
   {
    "id": "utilities",
@@ -146,8 +146,8 @@
     "1-21"
    ],
    "topic": "utilities.water-shutoff-gap",
-   "placeholder": true,
-   "value": null
+   "placeholder": false,
+   "value": "Milton Township CERT Volunteers do not shut off water supply."
   },
   {
    "id": "media",
@@ -157,8 +157,8 @@
     "2-6"
    ],
    "topic": "organization.media",
-   "placeholder": true,
-   "value": null
+   "placeholder": false,
+   "value": "Do not speak with the Media. Direct them to the CERT Incident Command for any questions."
   },
   {
    "id": "exterior",
@@ -169,8 +169,8 @@
     "7-17"
    ],
    "topic": "sar.exterior-search",
-   "placeholder": true,
-   "value": null
+   "placeholder": false,
+   "value": "Follow the search instructions and pattern established by the incident commander in coordination with local first responders."
   },
   {
    "id": "laws",

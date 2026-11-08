@@ -1,6 +1,8 @@
-/* CERT Field Guide service worker. VERSION and PRECACHE are set by tools/bump_sw.py (content hash of every shipped file). */
+/* CERT Field Guide service worker. VERSION is the first 12 hex chars of SHA-256
+   over each precache file except sw.js (relative path, 8-byte big-endian length, bytes)
+   and over sw.js with this VERSION line set to an empty string. PRECACHE is every shipped file. */
 'use strict';
-const VERSION = '51b7c1391f88';
+const VERSION = '519c18ffb3ef';
 const CACHE = 'cert-fg-' + VERSION;
 const PRECACHE = [
  "./",

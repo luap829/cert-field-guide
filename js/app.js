@@ -71,6 +71,8 @@
 
   const APP_NAME = 'CERT Field Guide - Milton Township';
   const LOGO_ALT = 'CERT: Community Emergency Response Team logo';
+  // Welcome splash only. Not the Home draft box. Exact wording from the Nov 7, 2026 review.
+  const SELF_DEPLOY = 'Do Not Self-Deploy - Wait to be contacted by CERT first. Wear CERT gear only for official CERT deployment or events.';
   function setHeader(title, back) {
     const tb = $('#topbar');
     $('#topTitle').textContent = title || '';
@@ -568,14 +570,18 @@
     const coc = S.c.codeOfConduct;
     if (coc) {
       const flat = (items) => (items || []).map((i) => i.text + ' ' + flat(i.items)).join(' ');
-      S.index.push({ href: '#/coc', title: coc.title, where: 'Local Protocols', body: coc.intro.text, nt: norm(coc.title), nb: norm(coc.intro.text + ' ' + coc.cover.mission + ' code of conduct rules milton township') });
+      const coverBody = coc.intro.text + ' ' + (coc.cover.paragraphs || []).join(' ');
+      S.index.push({ href: '#/coc', title: coc.title, where: 'Local Protocols', body: coverBody, nt: norm(coc.title), nb: norm(coverBody + ' ' + coc.cover.mission + ' code of conduct rules milton township') });
       coc.articles.forEach((a) => {
         const body = (a.text ? a.text + ' ' : '') + flat(a.items);
         S.index.push({ href: '#/coc/' + a.num, title: 'Code of Conduct ' + a.num + '. ' + a.title, where: 'Code of Conduct (Milton Township CERT)', body, nt: norm('code of conduct ' + a.title), nb: norm(body + ' code of conduct milton township') });
       });
     }
-    S.index.push({ href: '#/welcome', title: 'Welcome: Mission Statement & Motto', where: 'Welcome', body: S.c.app.welcome.mission, nt: norm('welcome mission statement motto'), nb: norm(S.c.app.welcome.mission + ' ' + S.c.app.welcome.motto + ' ' + S.c.app.welcome.safety) });
-    S.lp.items.forEach((it) => S.index.push({ href: it.page || '#/local', title: 'Local protocol: ' + it.title, where: 'Local Protocols', body: it.why, nt: norm(it.title), nb: norm(it.why + ' local protocol milton township') }));
+    S.index.push({ href: '#/welcome', title: 'Welcome: Mission Statement & Motto', where: 'Welcome', body: S.c.app.welcome.mission + ' ' + SELF_DEPLOY, nt: norm('welcome mission statement motto do not self-deploy'), nb: norm(S.c.app.welcome.mission + ' ' + S.c.app.welcome.motto + ' ' + S.c.app.welcome.safety + ' ' + SELF_DEPLOY) });
+    S.lp.items.forEach((it) => {
+      const body = [it.why, it.value].filter(Boolean).join(' ');
+      S.index.push({ href: it.page || '#/local', title: 'Local protocol: ' + it.title, where: 'Local Protocols', body, nt: norm(it.title), nb: norm(body + ' local protocol milton township') });
+    });
     S.index.push({ href: '#/about', title: 'About & sources', where: 'About', body: 'FEMA credit, corrections, review flags, privacy', nt: 'about sources', nb: norm('fema credit copyright corrections review privacy version offline') });
     S.index.push({ href: '#/install', title: 'Add to Home Screen', where: 'Help', body: 'Install on iPhone, iPad, Android for offline use', nt: 'add to home screen install', nb: 'install iphone ipad android offline home screen' });
   }
@@ -625,6 +631,24 @@
   }
 
   // ---------- local protocols ----------
+  // Phone and email become links after escaping. Tests must not activate tel: or mailto:.
+  function contactHtml(text) {
+    let s = esc(text);
+    s = s.replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, (m) => `<a href="mailto:${m}">${m}</a>`);
+    s = s.replace(/\((\d{3})\) (\d{3})-(\d{4})/g, (m, a, b, c) => `<a href="tel:+1${a}${b}${c}">${m}</a>`);
+    s = s.replace(/(^|[\s])911(?=[\s.,]|$)/g, (m, pre) => `${pre}<a href="tel:911">911</a>`);
+    return s;
+  }
+  function protocolValueHtml(it) {
+    if (it.page) {
+      return `<div class="box ok"><p>${contactHtml(it.value)}</p><p><a class="btn primary" href="${esc(it.page)}">Open the Code of Conduct</a></p></div>`;
+    }
+    if (it.placeholder || !it.value) {
+      return `<div class="box local"><span class="lbl">Placeholder: Milton Township CERT program to fill in</span><span class="muted">Not yet provided.</span></div>`;
+    }
+    const paras = String(it.value).split(/\n{2,}/).map((p) => `<p>${contactHtml(p).replace(/\n/g, '<br>')}</p>`).join('');
+    return `<div class="box ok">${paras}</div>`;
+  }
   function vLocal(v) {
     setHeader('Local Protocols', '#/'); setTab('local');
     const lp = S.lp;
@@ -632,18 +656,13 @@
     h += '<p>The FEMA manual leaves most of these items to your sponsoring agency. Until the Milton Township CERT program fills them in, follow your team leader and your training.</p>';
     h += lp.items.map((it) => {
       const linked = it.topic && T(it.topic) ? ` <a href="${href.topic(it.topic)}">Related topic</a>` : '';
-      const body = it.page
-        ? `<div class="box ok">${esc(it.value)}<p><a class="btn primary" href="${esc(it.page)}">Open the Code of Conduct</a></p></div>`
-        : it.placeholder || !it.value
-        ? `<div class="box local"><span class="lbl">Placeholder: Milton Township CERT program to fill in</span><span class="muted">Not yet provided.</span></div>`
-        : `<div class="box ok">${esc(it.value)}</div>`;
-      return `<section><h3>${esc(it.title)}</h3><p class="small">${esc(it.why)}${citeSpan(it.cite)}${linked}</p>${body}</section>`;
+      return `<section id="lp-${esc(it.id)}"><h3>${esc(it.title)}</h3><p class="small">${esc(it.why)}${citeSpan(it.cite)}${linked}</p>${protocolValueHtml(it)}</section>`;
     }).join('');
     h += `<p class="small muted">For maintainers: ${esc(lp.howToEdit)}</p>`;
     v.innerHTML = h;
   }
 
-  // ---------- code of conduct (program document, verbatim; names omitted) ----------
+  // ---------- code of conduct (program document, verbatim) ----------
   function cocItems(items) {
     if (!items || !items.length) return '';
     return '<ul class="coc">' + items.map((i) => `<li><span class="cl">${esc(i.label)}.</span><span class="ct">${esc(i.text)}${cocItems(i.items)}</span></li>`).join('') + '</ul>';
@@ -654,7 +673,6 @@
     if (!coc) return vNotFound(v);
     let h = `<h2 class="coctitle">${esc(coc.title)}</h2>`;
     h += `<p class="small">Source: ${esc(coc.source)} The program\u2019s wording is kept as written.</p>`;
-    h += `<div class="box info"><span class="lbl">Left out of this app</span><ul class="plain small">${coc.omissions.map((o) => `<li>${esc(o)}</li>`).join('')}</ul></div>`;
     h += '<nav class="cocjump" aria-label="Sections">' + coc.articles.map((a) => `<a class="cocj" href="#/coc/${a.num}">${esc(a.num)}. ${esc(a.title)}</a>`).join('') + '</nav>';
     h += `<section id="coc-cover"><h3>${esc(coc.cover.heading)}</h3><p>${esc(coc.cover.mission)}${citeSpan(coc.cover.cite)}</p>${coc.cover.paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}</section>`;
     h += `<p class="cocintro">${esc(coc.intro.text)}${citeSpan(coc.intro.cite)}</p>`;
@@ -675,6 +693,7 @@
       <h2 class="wtitle" id="wTitle">${esc(APP_NAME)}</h2>
       <h3 id="wMottoH">${esc(w.mottoHeading)}</h3><p class="wmotto" id="wMotto">${esc(w.motto)}</p>
       <p class="wsafety" id="wSafety">${esc(w.safety)}</p>
+      <p class="wselfdeploy" id="wSelfDeploy">${esc(SELF_DEPLOY)}</p>
       <div class="wgo"><button type="button" class="btn primary wcontinue" id="wContinue">Continue to main menu <span aria-hidden="true">\u2192</span></button></div>
       <h3 id="wMissionH">${esc(w.missionHeading)}</h3><p id="wMission">${esc(w.mission)}</p>
     </div>`;
@@ -700,26 +719,30 @@
     h += `<div class="notice draft"><strong>${c.app.reviewed ? 'Reviewed.' : 'DRAFT: not for field use yet.'}</strong> ${esc(c.app.reviewNote)}</div>`;
     h += '<p><a class="btn" href="#/welcome" id="aboutWelcome">Show welcome page (mission &amp; motto)</a></p>';
     h += `<div class="logowrap" id="aboutLogo"><div class="logoplate"><img class="certlogo" src="icons/CERT_LOGO_RGB.svg" alt="${LOGO_ALT}" width="230" height="130"></div></div>`;
-    h += `<h2 class="apptitle" id="aboutName">${esc(APP_NAME)}</h2>`;
-    h += '<p class="small" id="logoCredit">CERT logo: National CERT program (FEMA), used by the registered Milton Township CERT program per the CERT Logo Usage Guide.</p>';
-    h += '<h2 id="ackH">Acknowledgments</h2><p id="ack">The CERT Field Guide - Milton Township app was designed and built by Paul Lindner.</p>';
-    h += '<h2>Source and credit</h2>';
-    h += `<p>Content is condensed from the <strong>${esc(src.title)}</strong>, ${esc(src.edition)}, published by ${esc(src.publisher)}. Credit: FEMA / Emergency Management Institute.</p>`;
-    h += `<p><a href="${esc(src.url)}" target="_blank" rel="noopener noreferrer">Open the full manual (PDF on ready.gov)</a> <span class="small muted">(needs internet)</span></p>`;
-    h += '<div class="box caution"><span class="lbl">Important</span>This is a <strong>condensed field reference</strong>. It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong> or DHS. It summarizes the manual and does not replace it, your training, your team leader, or local protocols. <strong>Medical content is pending instructor review.</strong></div>';
-    h += `<p class="small">${esc(c.usage.statementInPdf)} ${esc(c.usage.femaPolicy)}</p>`;
-    h += `<p class="small">${esc(src.citationFormat.split(' pdfPageMap')[0])}</p>`;
-    const ts = c.triageSource;
-    if (ts) {
-      h += '<h2>Triage source</h2>';
-      h += `<p>The Triage section and the START triage tool come from <strong>${esc(ts.title)}</strong>, ${ts.pages} pages. Author: FEMA; no author or publisher statement is printed in the document itself. ${esc(ts.date)} ${esc(ts.provenance)}</p>`;
-      h += `<p class="small">${esc(ts.usage)} Citations like \u201CFEMA CERT Triage &amp; MCI unit, p. 17\u201D refer to its printed page numbers.</p>`;
-      h += '<div class="box caution"><span class="lbl">Important</span>The triage content is a <strong>condensed field reference</strong>. It is <strong>not a FEMA product</strong> and is <strong>not endorsed by FEMA</strong>. <strong>Triage content is pending instructor review.</strong></div>';
-    }
-    if (c.codeOfConduct) {
-      h += '<h2>Code of Conduct source</h2>';
-      h += `<p>The <a href="#/coc">Code of Conduct (Milton Township CERT)</a> under Local Protocols is the program\u2019s own document. ${esc(c.codeOfConduct.source)} Citations like \u201CMilton Twp. CERT Code of Conduct, p. 2\u201D refer to its printed page numbers. Individual names are left out of this app.</p>`;
-    }
+    h += '<h2 class="apptitle" id="aboutName">CERT Field Guide\u2122 \u2013 Milton Township</h2>';
+    h += '<div id="aboutCopy">';
+    h += '<h2 id="ackH">Acknowledgments</h2><p id="ack">Designed and built by Paul Lindner with AI assistance, for use by the Milton Township CERT program.</p>';
+    h += '<h2 id="brandH">Copyright and branding</h2>';
+    h += '<p id="copyright">\u00a9 2026 Paul Lindner. All rights reserved in the original human-authored portions of this app, including eligible original text, code, artwork, and creative arrangement. No copyright is claimed in purely AI-generated material, public-domain works, or materials owned by others.</p>';
+    h += '<p>CERT Field Guide\u2122 is used as an unregistered trademark identifying this app. No ownership of FEMA\u2019s name or branding is claimed.</p>';
+    h += '<p class="small" id="logoCredit">The CERT logo is owned by the Federal Emergency Management Agency (FEMA).</p>';
+    h += '<h2>Important</h2>';
+    h += '<p>This app is a condensed field reference for the Milton Township CERT program. It is not a FEMA or Department of Homeland Security (DHS) product and is not endorsed by either agency. Local program adoption and display of the CERT logo do not imply federal endorsement.</p>';
+    h += '<p>The app does not replace the source manuals, your training, your team leader\u2019s instructions, or local protocols. Consult the original sources for complete information and exact wording. Medical and triage content is pending instructor review.</p>';
+    h += '<h2>FEMA participant manual</h2>';
+    h += '<p>Content is condensed and adapted from the <em>CERT Basic Training Participant Manual, 2019 Update (August 2019)</em>, published by FEMA\u2019s National CERT Program. Source credit: FEMA / Emergency Management Institute.</p>';
+    h += '<p>Works prepared by federal employees as part of their official duties are public domain in the United States under 17 U.S.C. \u00a7105. This does not automatically include third-party photographs, illustrations, or other separately owned material appearing in the manual.</p>';
+    h += `<p><a href="${esc(src.url)}" target="_blank" rel="noopener noreferrer">Open the full manual (PDF; internet required)</a></p>`;
+    h += '<p>Citations use printed page labels: \u201cFEMA CERT Basic PM (2019), p. 3-4\u201d means Unit 3, page 4; \u201cIntro-N\u201d means Introduction page N.</p>';
+    h += '<h2>Triage source</h2>';
+    h += '<p>The Triage section and START triage tool draw from <em>CERT Triage &amp; Mass Casualty Incidents (Optional Unit)</em>, a 22-page manual used in the University of Utah Hybrid CERT course. A copy was provided by Milton Township CERT. The source PDF is not bundled with this app.</p>';
+    h += '<p>The manual contains no author, publisher, date, or reuse statement. Its authorship and reuse permissions have not been established.</p>';
+    h += '<p>The course acknowledges Listos California/Cal OES, the National CERT Association, the University of Utah, Utah Division of Emergency Management, and Merit. These course-level credits do not establish authorship of the downloadable manual.</p>';
+    h += '<p>Existing citations labeled \u201cFEMA CERT Triage &amp; MCI unit\u201d refer to this manual\u2019s printed pages; that label does not establish FEMA authorship.</p>';
+    h += '<h2>Local Code of Conduct</h2>';
+    h += '<p>The <a href="#/coc">Code of Conduct under Local Protocols</a> draws from the <em>Milton Township, DuPage County Community Emergency Response Team (CERT) Code of Conduct</em>, provided by the program: cover and printed pages 1\u20134.</p>';
+    h += '<p>Citations refer to the document\u2019s printed page numbers. No ownership of this source document is claimed.</p>';
+    h += '</div>';
     if (c.app.illinoisRule) {
       h += '<h2>Illinois: \u201CBlack\u201D is a triage category</h2>';
       h += `<div class="box review" id="illinoisNote"><span class="lbl">Status: Black</span>${esc(c.app.illinoisRule)}${(c.app.illinoisRuleCite || []).length ? ' (' + c.app.illinoisRuleCite.map((x) => `<span class="cite">${esc(x)}</span>`).join('; ') + ')' : ''} The FEMA team report\u2019s third \u201CPeople\u201D field is relabeled \u201CBlack (per triage)\u201D. Guidance on handling people in the Black category is listed only under <a href="#/local">Local Protocols</a>.</div>`;
